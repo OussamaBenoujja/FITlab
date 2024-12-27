@@ -10,7 +10,6 @@ class Authentication {
         $this->db = $dbConnection;
     }
     
-
     public function login($email, $password) {
         $user = $this->getUserByEmail($email);
         if ($user && password_verify($password, $user['password'])) {
