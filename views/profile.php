@@ -1,3 +1,32 @@
+
+
+
+<?php
+
+session_start();
+
+
+if(!isset($_SESSION['email'])){
+  header('Location: login.php');
+  exit;
+}
+
+
+
+
+
+?>
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,7 +51,7 @@
             <!-- FullName -->
             <h1
                 class="w-full text-left my-4 sm:mx-4 xs:pl-4 text-gray-800 dark:text-white lg:text-4xl md:text-3xl sm:text-3xl xs:text-xl font-serif">
-                Samuel Abera</h1>
+                <?php echo $_SESSION['lastname'] . $_SESSION['firstname'] ?></h1>
 
         </div>
 

@@ -1,110 +1,114 @@
+<?php
+
+
+
+
+require_once('../control/db_config.php');
+require_once('../control/basecrud.php');
+require_once('../control/control.php');
+
+$database = new Database();
+$conn = $database->conn;
+
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_activity'])) {
+    $name = $_POST['activity_name'];
+    $description = $_POST['description'];
+    $price = $_POST['price'];
+
+    $stmt = $conn->prepare("INSERT INTO activities (name, description, price) VALUES (:name, :description, :price)");
+    $stmt->bindParam(':name', $name);
+    $stmt->bindParam(':description', $description);
+    $stmt->bindParam(':price', $price);
+
+    if ($stmt->execute()) {
+        echo "<script>alert('Activity added successfully!');</script>";
+    } else {
+        echo "<script>alert('Failed to add activity.');</script>";
+    }
+}
+
+function fetchReservations($conn) {
+    $query = "
+        SELECT r.id, u.firstName, u.lastName, u.email, r.reservation_date 
+        FROM reservations r 
+        JOIN users u ON r.user_id = u.id";
+
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+$reservationList = fetchReservations($conn);
+?>
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <meta name="description" content="" />
-        <meta name="author" content="" />
-        <title>Dashboard - Avocat connect</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-        <link href="../assest/image/css/style.css" rel="stylesheet" />
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
-    </head>
-    <body class="sb-nav-fixed">
-        <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
-            <a class="navbar-brand ps-3" href="index.html">ADMIN DASHBOARD</a>
-            <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>          
-        </nav>
-        <div id="layoutSidenav">
-            <div id="layoutSidenav_nav">
-                <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                    <div class="sb-sidenav-menu">
-                        <div class="nav">
-                            <div class="sb-sidenav-menu-heading">details</div>
-                            <a class="nav-link" href="../views/profile.php" >
-                                <div class="sb-nav-link-icon"><i class="fa-solid fa-user"></i></div>
-                                profile
-                            </a>
-                            <a class="nav-link" href="../views/logout.php">
-                                <div class="sb-nav-link-icon"><i class="fa fa-sign-out" aria-hidden="true"></i>                                </div>
-                                LOGOUT
-                            </a>
-                        </div>
-                    </div>
-                    <div class="sb-sidenav-footer">
-                        <div class="small">Logged in as:</div>
-                        imily
-                    </div>
-                </nav>
-            </div>
-            <div id="layoutSidenav_content">
-                <main>
-                    <div class="container-fluid px-4">
-                        <h1 class="mt-4">Dashboard</h1>
-                        <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Dashboard</li>
-                        </ol>
-                       
-                       
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <i class="fas fa-table me-1"></i>
-                                members resivations :
-                            </div>
-                            <div class="overflow-x-auto p-4 bg-white rounded-lg shadow-md">
-    <table class="table-auto w-full border-collapse border border-gray-200">
-        <thead class="bg-red-500 text-white">
-            <tr>
-                <th class="px-4 py-2 border border-gray-300">date de reservation</th>
-                <th class="px-4 py-2 border border-gray-300">Nom</th>
-                <th class="px-4 py-2 border border-gray-300">Prenom</th>
-                <th class="px-4 py-2 border border-gray-300">Email</th>
-            </tr>
-        </thead>
-        <tbody>
-    
-           
-    </table>
-</div>
-                        </div>
-                    </div>
-                </main>
-                <footer class="py-4 bg-light mt-auto">
-                    <div class="container-fluid px-4">
-                        <div class="d-flex align-items-center justify-content-between small">
-                            <div class="text-muted">Copyright &copy; FITNESSE BDARIJA 2024</div>
-                        </div>
-                    </div>
-                </footer>
-            </div>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fitbase Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" />
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center">Fitbase Admin Dashboard</h1>
+
+        <!-- Button to Add Activity -->
+        <div class="mb-3 text-center">
+            <button id="toggleActivityForm" class="btn btn-primary">Add Activity</button>
         </div>
 
+        <!-- Add Activity Form -->
+        <div id="activityForm" class="mb-4" style="display: none;">
+            <h2>Add Activity</h2>
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="activity_name" class="form-label">Activity Name</label>
+                    <input type="text" name="activity_name" id="activity_name" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea name="description" id="description" class="form-control" required></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <input type="number" name="price" id="price" class="form-control" required step="0.01">
+                </div>
+                <button type="submit" name="add_activity" class="btn btn-success">Add Activity</button>
+            </form>
+        </div>
 
-        <script>
-            window.addEventListener('DOMContentLoaded', event => {
+        <!-- Reservations Table -->
+        <h2>Member Reservations</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date of Reservation</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($reservationList as $reservation): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($reservation['reservation_date']); ?></td>
+                        <td><?php echo htmlspecialchars($reservation['firstName']); ?></td>
+                        <td><?php echo htmlspecialchars($reservation['lastName']); ?></td>
+                        <td><?php echo htmlspecialchars($reservation['email']); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 
-const sidebarToggle = document.body.querySelector('#sidebarToggle');
-if (sidebarToggle) {
-   
-    sidebarToggle.addEventListener('click', event => {
-        event.preventDefault();
-        document.body.classList.toggle('sb-sidenav-toggled');
-        localStorage.setItem('sb|sidebar-toggle', document.body.classList.contains('sb-sidenav-toggled'));
-    });
-}
-
-});
-        </script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        <script src="assets/demo/chart-area-demo.js"></script>
-        <script src="assets/demo/chart-bar-demo.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-        <script src="js/datatables-simple-demo.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    </body>
+    <script>
+        document.getElementById('toggleActivityForm').onclick = function() {
+            var activityForm = document.getElementById('activityForm');
+            activityForm.style.display = activityForm.style.display === "none" ? "block" : "none";
+        };
+    </script>
+</body>
 </html>

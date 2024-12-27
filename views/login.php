@@ -1,3 +1,35 @@
+
+
+
+<?php
+session_start();
+
+require_once('../control/db_config.php');
+require_once('../control/basecrud.php');
+require_once('../control/control.php');
+require_once('../control/auth.php');
+
+$database = new Database();
+$conn = $database->conn;
+$auth = new Authentication($conn);
+
+if(isset($_POST['login'])){
+
+  if($auth->login($_POST['email'], $_POST['password'])){
+    header('Location: home.php');
+    exit;
+  }
+
+
+}
+
+
+
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,11 +58,11 @@
 <div class="flex justify-center items-center h-screen p-10 ">
   <div class="grid md:grid-cols-2 grid-cols-1  border rounded-3xl">
     <div class="flex justify-center items-center p-5">
-      <form action="">
+      <form action="login.php" method='POST'>
         <h1 class="text-center mb-10 font-bold text-4xl">Login</h1>
-        <input type="email" class=" bg-gray-100 border outline-none rounded-md py-3 w-full px-4 mb-3" placeholder="Email">
-        <input type="password" class=" bg-gray-100 border outline-none rounded-md py-3 w-full px-4 mb-3" placeholder="Password">
-        <button type="submit" class=" bg-yellow-400 hover:bg-yellow-500 border outline-none rounded-md py-3 w-full px-4 font-semibold text-white">submit</button>
+        <input type="email" name='email' class=" bg-gray-100 border outline-none rounded-md py-3 w-full px-4 mb-3" placeholder="Email">
+        <input type="password" name='password' class=" bg-gray-100 border outline-none rounded-md py-3 w-full px-4 mb-3" placeholder="Password">
+        <button type="submit" name='login' class=" bg-yellow-400 hover:bg-yellow-500 border outline-none rounded-md py-3 w-full px-4 font-semibold text-white">submit</button>
       </form>
     </div>
     <div class="">
