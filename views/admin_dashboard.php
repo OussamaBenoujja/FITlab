@@ -1,4 +1,16 @@
 <?php
+
+
+
+
+
+
+if(isset($_SESSION['user_id']) && $_SESSION['role'] != 'admin'){
+        header('Location: home.php');
+}
+
+
+
 require_once('../control/db_config.php');
 require_once('../control/basecrud.php');
 require_once('../control/control.php');
@@ -32,7 +44,6 @@ $stmt = $conn->prepare($reservationQuery);
 $stmt->execute();
 $reservationList = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Handle POST requests
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['delete_user'])) {
         $userId = $_POST['user_id'];
