@@ -90,10 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Profile - Fitbase</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-light">
-
-
 
 
 <nav class="bg-black p-4 shadow-lg">
@@ -127,6 +125,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
         </div>
     </div>
 </nav>
+
+
+<body class="bg-light">
+
 
 
 <div class="container mt-5">

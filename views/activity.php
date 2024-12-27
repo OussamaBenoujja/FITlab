@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $currentUserId !== null) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <title><?php echo htmlspecialchars($activity['name']); ?></title>
 </head>
 <nav class="bg-black p-4 shadow-lg">
@@ -87,9 +88,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $currentUserId !== null) {
         </div>
     </div>
 </nav>
-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+<body>
 
-
+<main class="bg-gray-50 min-h-screen flex items-center justify-center">
 
     <div class="w-full max-w-2xl bg-white shadow-lg rounded-lg p-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-4"><?php echo htmlspecialchars($activity['name']); ?></h1>
@@ -112,5 +113,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $currentUserId !== null) {
             <p class="text-red-500 font-semibold">Please log in to reserve this activity.</p>
         <?php endif; ?>
     </div>
+    </main>
 </body>
 </html>
