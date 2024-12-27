@@ -55,3 +55,7 @@ CREATE TABLE logs (
     action_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+
+ALTER TABLE reservations
+ADD COLUMN status ENUM('confirmed', 'canceled', 'pending') DEFAULT 'pending';
