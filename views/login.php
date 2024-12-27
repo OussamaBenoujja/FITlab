@@ -51,6 +51,40 @@ if(isset($_POST['login'])){
 </head>
 <body>
 
+
+<nav class="bg-black p-4 shadow-lg">
+    <div class="container mx-auto flex items-center justify-between">
+    
+        <a href="/" class="text-gold font-bold text-xl hover:text-yellow-400 transition duration-300">
+            FitLab
+        </a>
+
+        
+        <div class="flex space-x-6">
+            <a href="home.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                Home
+            </a>
+
+            <?php if (!isset($_SESSION['user_id'])) : ?>
+                <a href="login.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    Login
+                </a>
+                <a href="register.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    Sign Up
+                </a>
+            <?php else : ?>
+                <a href="profile.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    Profile
+                </a>
+                <a href="logout.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    LogOut
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+</nav>
+
+
 <div class="sm:mx-auto sm:w-full sm:max-w-md mt-20">
         <img class="mx-auto h-10 w-auto" src="https://www.svgrepo.com/show/301692/login.svg" alt="Workflow">
         <h2 class="mt-6 text-center text-3xl leading-9 font-extrabold text-gray-900">

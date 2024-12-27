@@ -96,6 +96,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Register</title>
 </head>
 <body>
+
+
+
+<nav class="bg-black p-4 shadow-lg">
+    <div class="container mx-auto flex items-center justify-between">
+    
+        <a href="/" class="text-gold font-bold text-xl hover:text-yellow-400 transition duration-300">
+            FitLab
+        </a>
+
+        
+        <div class="flex space-x-6">
+            <a href="home.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                Home
+            </a>
+
+            <?php if (!isset($_SESSION['user_id'])) : ?>
+                <a href="login.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    Login
+                </a>
+                <a href="register.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    Sign Up
+                </a>
+            <?php else : ?>
+                <a href="profile.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    Profile
+                </a>
+                <a href="logout.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    LogOut
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+</nav>
   
 
 <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">

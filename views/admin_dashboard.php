@@ -91,6 +91,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" />
 </head>
 <body class="bg-light">
+
+
+<nav class="bg-black p-4 shadow-lg">
+    <div class="container mx-auto flex items-center justify-between">
+    
+        <a href="/" class="text-gold font-bold text-xl hover:text-yellow-400 transition duration-300">
+            FitLab
+        </a>
+
+        
+        <div class="flex space-x-6">
+
+
+            <?php if (!isset($_SESSION['user_id'])) : ?>
+
+            <?php else : ?>
+
+                <a href="logout.php" class="text-yellow-500 hover:text-yellow-400 transition duration-300">
+                    LogOut
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+</nav>
+
+
+
 <div class="container mt-5">
     <h1 class="text-center">Fitbase Admin Dashboard</h1>
 
