@@ -15,10 +15,10 @@ $auth = new Authentication($conn);
 
 if(isset($_POST['login'])){
 
-  if($auth->login($_POST['email'], $_POST['password'])){
+  $auth->login($_POST['email'], $_POST['password']);
     header('Location: home.php');
     exit;
-  }
+  
 
 
 }

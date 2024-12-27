@@ -1,106 +1,72 @@
 <?php
-require_once('../control/db_config.php'); // Adjust the path as necessary for your project structure
+session_start();
+require_once('../control/db_config.php');
 require_once('../control/basecrud.php');
 require_once('../control/control.php');
 
-// Connect to the database
 $database = new Database();
-$conn = $database->conn;
+$db = $database->conn;
 
-// Check if activity_ID is provided in the URL
-if (!isset($_GET['activity_ID'])) {
-    die("Activity ID is missing.");
-}
+$activities = new Activities($db);
+$users = new Users($db);
 
-// Fetch the activity ID from the URL
-$activity_id = $_GET['activity_ID'];
+$activityId = isset($_GET['activity_ID']) ? intval($_GET['activity_ID']) : 0;
 
-// Fetch activity details from the database
-$activitiesClass = new Activities($conn);
-$activity = $activitiesClass->getActivity($activity_id);
+$currentUserId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
-// If no activity found, show an error
-if (!$activity) {
+$activityDetails = $activities->getActivity($activityId);
+
+if (empty($activityDetails)) {
     die("Activity not found.");
 }
 
-// Handle the form submission
-$message = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'];
-    $date = $_POST['date'];
+$activity = $activityDetails[0]; 
 
-    // Create a new reservation
-    $reservationClass = new Reservations($conn);
-    $result = $reservationClass->createReservation([
-        'user_id' => $user_id, // Use your actual user ID retrieval method
-        'activity_id' => $activity_id,
-        'email' => $email,
-        'date' => $date
-    ]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $currentUserId !== null) {
+    $reservationDate = isset($_POST['reservation_date']) ? $_POST['reservation_date'] : date('Y-m-d');
 
-    if ($result) {
-        $message = "Reservation successful!";
-    } else {
-        $message = "Failed to make a reservation.";
-    }
+    $reservationData = [
+        'user_id' => $currentUserId,
+        'activity_id' => $activityId,
+        'reservation_date' => $reservationDate
+    ];
+    
+    $reservations = new Reservations($db);
+    $reservations->createReservation($reservationData);
+
+    echo "Reservation successful!";
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Reserve Activity</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title><?php echo htmlspecialchars($activity['name']); ?></title>
 </head>
+<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-2xl bg-white shadow-lg rounded-lg p-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4"><?php echo htmlspecialchars($activity['name']); ?></h1>
+        <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($activity['description']); ?></p>
+        <p class="text-lg font-semibold text-gray-700 mb-6">Price: $<?php echo htmlspecialchars($activity['price']); ?></p>
 
-<body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Gym Activity Reservations</a>
-            <a class="btn btn-outline-success mx-2" href="home.php">Home Page</a>
-        </div>
-    </nav>
-
-    <div class="container mt-5">
-        <h1 class="text-center">Reserve Activity: <?php echo htmlspecialchars($activity['name'] ?? ''); ?></h1>
-
-        <?php if ($message): ?>
-            <div class="alert alert-info text-center"><?php echo htmlspecialchars($message); ?></div>
+        <?php if ($currentUserId !== null): ?>
+            <form method="post" class="space-y-4">
+                <div>
+                    <label for="reservation_date" class="block text-sm font-medium text-gray-700 mb-2">Select a Date:</label>
+                    <input type="date" id="reservation_date" name="reservation_date" class="bg-gray-100 border outline-none rounded-md py-2 px-4 w-full">
+                </div>
+                <div class="flex justify-center">
+                    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-md">
+                        Reserve This Activity
+                    </button>
+                </div>
+            </form>
+        <?php else: ?>
+            <p class="text-red-500 font-semibold">Please log in to reserve this activity.</p>
         <?php endif; ?>
-
-        <div class="card mb-4">
-            <img src="https://via.placeholder.com/600x360" class="card-img-top" alt="<?php echo htmlspecialchars($activity['name'] ?? ''); ?>">
-            <div class="card-body">
-                <h5 class="card-title"><?php echo htmlspecialchars($activity['name'] ?? ''); ?></h5>
-                <p class="card-text"><?php echo htmlspecialchars($activity['description'] ?? ''); ?></p>
-            </div>
-        </div>
-
-        <form method="POST" class="bg-light p-4 rounded">
-            <div class="mb-3">
-                <label for="email" class="form-label">Email Address</label>
-                <input type="email" class="form-control" name="email" placeholder="Enter email" required>
-            </div>
-            <div class="mb-3">
-                <label for="date" class="form-label">Select Date</label>
-                <input type="date" class="form-control" name="date" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Reserve Activity</button>
-        </form>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>
-
-<?php
-// Close the database connection
-$conn = null;
-?>
