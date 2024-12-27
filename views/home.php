@@ -1,5 +1,5 @@
 <?php
-// Database connection and BaseCRUD
+
 class BaseCRUD {
     protected $conn;
 
@@ -8,7 +8,7 @@ class BaseCRUD {
     }
 
     public function create($table, $data) {
-        // Implementation remains the same...
+       
     }
 
     public function read($table, $conditions = '1=1') {
@@ -19,11 +19,11 @@ class BaseCRUD {
     }
 
     public function update($table, $data, $conditions) {
-        // Implementation remains the same...
+        
     }
 
     public function delete($table, $conditions) {
-        // Implementation remains the same...
+        
     }
 }
 
@@ -51,7 +51,7 @@ class Activities extends BaseCRUD {
     }
 }
 
-// Database connection
+
 $host = 'localhost';
 $db = 'fitbase';
 $user = 'osama'; 
@@ -64,7 +64,7 @@ try {
     echo "Connection failed: " . $e->getMessage();
 }
 
-// Fetch activities using the Activities class
+
 $activitiesClass = new Activities($conn);
 $activities = $activitiesClass->getAllActivities();
 ?>
@@ -121,6 +121,6 @@ $activities = $activitiesClass->getAllActivities();
 </html>
 
 <?php
-// Close the connection
+
 $conn = null;
 ?>
